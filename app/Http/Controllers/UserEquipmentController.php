@@ -49,9 +49,10 @@ class UserEquipmentController extends Controller
             $ticket->approve();
             event(new TicketApproved($ticket));
             event(new TicketClosed($ticket));
+            $message = 'Equipment assigned and ticket closed successfully.';
         }
 
-        return redirect(route('users.show', [$user->id]))->with('success_message', 'Equipment assigned successfully.');
+        return redirect(route('users.show', [$user->id]))->with('success_message',$message ?? 'Equipment assigned successfully.');
     }
 
     /**
