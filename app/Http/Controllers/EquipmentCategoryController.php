@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\EquipmentCategoryRequest;
 use App\Models\EquipmentCategory;
 use Illuminate\Http\Request;
 
@@ -12,9 +13,18 @@ class EquipmentCategoryController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        // search
+        if ($request->has('q')) {
+            $search = $request->q;
+            $equipmentCategories = EquipmentCategory::where('name', 'LIKE', "%$search%")
+                ->get();
+        } else {
+            $equipmentCategories = EquipmentCategory::all();
+        }
+
+        return view('equipment_categories.index', compact('equipmentCategories'));
     }
 
     /**
@@ -30,12 +40,17 @@ class EquipmentCategoryController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param  \App\Http\Requests\EquipmentCategoryRequest  $request
+     *
+     * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(Request $request)
+    public function store(EquipmentCategoryRequest $request)
     {
-        //
+        $this->authorize('manage', EquipmentCategory::class);
+
+        EquipmentCategory::create($request->validated());
+
+        return redirect()->back()->with('success_message', 'Equipment category created successfully.');
     }
 
     /**
@@ -46,7 +61,7 @@ class EquipmentCategoryController extends Controller
      */
     public function show(EquipmentCategory $equipmentCategory)
     {
-        //
+        return view('equipment_categories.show', compact('equipmentCategory'));
     }
 
     /**
@@ -63,13 +78,18 @@ class EquipmentCategoryController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\EquipmentCategory  $equipmentCategory
+     * @param  \App\Http\Requests\EquipmentCategoryRequest  $request
+     * @param  \App\Models\EquipmentCategory                $equipmentCategory
+     *
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, EquipmentCategory $equipmentCategory)
+    public function update(EquipmentCategoryRequest $request, EquipmentCategory $equipmentCategory)
     {
-        //
+        $this->authorize('manage', EquipmentCategory::class);
+
+        $equipmentCategory->update($request->validated());
+
+        return redirect()->back()->with('success_message', 'Equipment category updated successfully.');
     }
 
     /**
@@ -80,6 +100,10 @@ class EquipmentCategoryController extends Controller
      */
     public function destroy(EquipmentCategory $equipmentCategory)
     {
-        //
+        $this->authorize('manage', EquipmentCategory::class);
+
+        $equipmentCategory->delete();
+
+        return redirect()->back()->with('success_message', 'Equipment category deleted successfully.');
     }
 }

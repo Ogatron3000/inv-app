@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\DocumentRequest;
 use App\Models\Document;
-use App\Models\DocumentItem;
+use App\Models\UserEquipment;
 use App\Models\Equipment;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -100,13 +100,16 @@ class DocumentController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Document  $document
+     * @param  \App\Http\Requests\DocumentRequest  $request
+     * @param  \App\Models\Document                $document
+     *
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Document $document)
+    public function update(DocumentRequest $request, Document $document)
     {
-        //
+        $request->merge(['admin_id' => auth()->id() ]);
+        $document->update($request->all());
+        return redirect()->route('documents.show', $document->id);
     }
 
     /**

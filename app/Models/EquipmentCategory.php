@@ -15,7 +15,17 @@ class EquipmentCategory extends Model
         return $this->hasMany(Equipment::class);
     }
 
-    public function available_equipment(){
-        return $this->hasMany(Equipment::class)->available();
+    public function equipmentInStock(){
+        return $this->hasMany(Equipment::class)->inStock();
+    }
+
+    public function serialNumbers()
+    {
+        return $this->hasManyThrough(SerialNumber::class, Equipment::class);
+    }
+
+    public function faq()
+    {
+        return$this->hasMany(FAQ::class);
     }
 }

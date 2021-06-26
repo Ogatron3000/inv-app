@@ -15,9 +15,8 @@ class CreateEquipmentTable extends Migration
     {
         Schema::create('equipment', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('equipment_category_id')->constrained('equipment_categories');
+            $table->foreignId('equipment_category_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
             $table->string('name');
-            $table->integer('available_quantity')->default(1);
             $table->string('description')->nullable();
             $table->timestamps();
         });

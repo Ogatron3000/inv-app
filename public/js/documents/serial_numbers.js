@@ -1,5 +1,4 @@
 function fillSerialNumbers(currentSerialNumber = null){
-    console.log('yo')
     let equipment_id = $("#equipment_select").val();
     if(equipment_id === ''){
         $("#serial_number_select").html('');

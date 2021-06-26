@@ -19,6 +19,9 @@ class DatabaseSeeder extends Seeder
         RoleSeeder::run();
         UserSeeder::run();
         EquipmentCategorySeeder::run();
+        EquipmentSeeder::run();
+        SerialNumberSeeder::run();
+        UserEquipmentSeeder::run();
         TicketStatusSeeder::run();
     }
 }

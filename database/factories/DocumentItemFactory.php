@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Models\DocumentItem;
+use App\Models\UserEquipment;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class DocumentItemFactory extends Factory
@@ -12,7 +12,7 @@ class DocumentItemFactory extends Factory
      *
      * @var string
      */
-    protected $model = DocumentItem::class;
+    protected $model = UserEquipment::class;
 
     /**
      * Define the model's default state.

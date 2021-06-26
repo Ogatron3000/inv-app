@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\DepartmentRequest;
 use App\Models\Department;
 use Illuminate\Http\Request;
 
@@ -12,9 +13,20 @@ class DepartmentController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $this->authorize('manage', Department::class);
+
+        // search
+        if ($request->has('q')) {
+            $search = $request->q;
+            $departments = Department::where('name', 'LIKE', "%$search%")
+                ->get();
+        } else {
+            $departments = Department::all();
+        }
+
+        return view('departments.index', compact('departments'));
     }
 
     /**
@@ -30,12 +42,17 @@ class DepartmentController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Http\Requests\DepartmentRequest  $request
+     *
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(DepartmentRequest $request)
     {
-        //
+        $this->authorize('manage', Department::class);
+
+        Department::create($request->validated());
+
+        return redirect()->back()->with('success_message', 'Department created successfully.');
     }
 
     /**
@@ -63,13 +80,18 @@ class DepartmentController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Department  $department
+     * @param  \App\Http\Requests\DepartmentRequest  $request
+     * @param  \App\Models\Department                $department
+     *
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Department $department)
+    public function update(DepartmentRequest $request, Department $department)
     {
-        //
+        $this->authorize('manage', Department::class);
+
+        $department->update($request->validated());
+
+        return redirect()->back()->with('success_message', 'Department updated successfully.');
     }
 
     /**
@@ -80,10 +102,17 @@ class DepartmentController extends Controller
      */
     public function destroy(Department $department)
     {
-        //
+        $this->authorize('manage', Department::class);
+
+        $department->delete();
+
+        return redirect()->back()->with('success_message', 'Department deleted successfully.');
     }
 
-    public function positions(Department $department){
+    public function positions(Department $department)
+    {
+        $this->authorize('manage', Department::class);
+
         return $department->positions;
     }
 }

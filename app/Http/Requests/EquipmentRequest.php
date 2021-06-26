@@ -33,7 +33,6 @@ class EquipmentRequest extends FormRequest
         return [
             'name' => 'required|min:3|max:255',
             'equipment_category_id' => 'required|integer',
-            'available_quantity' => 'required|integer|min:0',
             'description' => 'nullable'
         ];
     }
@@ -43,7 +42,6 @@ class EquipmentRequest extends FormRequest
         return [
             'name' => 'required|min:3|max:255',
             'equipment_category_id' => 'required|integer',
-            'available_quantity' => 'required|integer|min:0',
             'description' => 'nullable'
         ];
     }

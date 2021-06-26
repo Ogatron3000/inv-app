@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="_token" content="{{ csrf_token() }}">
     <title>@yield('page_title', 'InventoryAPP')</title>
 
     @include('partials.styles')
@@ -12,13 +13,12 @@
 <body class="hold-transition sidebar-mini layout-fixed">
     <div class="wrapper">
 
-{{--        @include('partials.preloader')--}}
         @include('partials.navbar')
         @include('partials.sidebar')
 
         <div class="content-wrapper">
 
-            @include('partials.content-header')
+            @yield('content-header')
 
             <!-- Main content -->
                 <section class="content">
@@ -37,4 +37,5 @@
 
     @include('partials.scripts')
     @yield('additional_scripts', '')
+    @include('sweetalert::alert')
 </body>

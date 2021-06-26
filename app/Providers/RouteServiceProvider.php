@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use App\Models\DocumentItem;
+use App\Models\UserEquipment;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Http\Request;

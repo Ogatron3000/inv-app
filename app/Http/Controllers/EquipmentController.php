@@ -15,15 +15,20 @@ class EquipmentController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $equipment = Equipment::all();
-        $content_header = "Equipment list";
-        $breadcrumbs = [
-            [ 'name' => 'Home', 'link' => '/' ],
-            [ 'name' => 'Equipment list', 'link' => '/equipment' ],
-        ];
-        return view('equipment.index', compact(['equipment', 'content_header', 'breadcrumbs']));
+        $this->authorize('manage', Equipment::class);
+
+        // search
+        if ($request->has('q')) {
+            $search = $request->q;
+            $equipment = Equipment::where('name', 'LIKE', "%$search%")
+                ->paginate(Equipment::PAGINATE);
+        } else {
+            $equipment = Equipment::paginate(Equipment::PAGINATE);
+        }
+
+        return view('equipment.index', compact('equipment'));
     }
 
     /**
@@ -33,14 +38,11 @@ class EquipmentController extends Controller
      */
     public function create()
     {
+        $this->authorize('manage', Equipment::class);
+
         $categories = EquipmentCategory::all();
-        $content_header = "Add New Equipment";
-        $breadcrumbs = [
-            [ 'name' => 'Home', 'link' => '/' ],
-            [ 'name' => 'Equipment list', 'link' => '/equipment' ],
-            [ 'name' => 'New Equipment', 'link' => '/equipment/create' ],
-        ];
-        return view('equipment.create', compact(['categories', 'content_header', 'breadcrumbs']));
+
+        return view('equipment.create', compact('categories'));
     }
 
     /**
@@ -51,8 +53,11 @@ class EquipmentController extends Controller
      */
     public function store(EquipmentRequest $request)
     {
+        $this->authorize('manage', Equipment::class);
+
         Equipment::query()->create($request->validated());
-        return redirect(route('equipment.index'));
+
+        return redirect()->route('equipment.index')->with('success_message', 'Equipment added successfully.');
     }
 
     /**
@@ -63,14 +68,9 @@ class EquipmentController extends Controller
      */
     public function show(Equipment $equipment)
     {
-        $content_header = "Equipment details";
-        $serial_numbers = $equipment->serial_numbers;
-        $breadcrumbs = [
-            [ 'name' => 'Home', 'link' => '/' ],
-            [ 'name' => 'Equipment list', 'link' => '/equipment' ],
-            [ 'name' => 'Equipment details', 'link' => '/equipment/'.$equipment->id ],
-        ];
-        return view('equipment.show', compact(['content_header', 'breadcrumbs', 'equipment', 'serial_numbers']));
+        $this->authorize('manage', Equipment::class);
+
+        return view('equipment.show', compact('equipment'));
     }
 
     /**
@@ -81,14 +81,11 @@ class EquipmentController extends Controller
      */
     public function edit(Equipment $equipment)
     {
+        $this->authorize('manage', Equipment::class);
+
         $categories = EquipmentCategory::all();
-        $content_header = "Edit Equipment details";
-        $breadcrumbs = [
-            [ 'name' => 'Home', 'link' => '/' ],
-            [ 'name' => 'Equipment list', 'link' => '/equipment' ],
-            [ 'name' => 'Edit Equipment details', 'link' => '/equipment/'.$equipment->id.'/edit' ],
-        ];
-        return view('equipment.edit', compact(['categories', 'content_header', 'breadcrumbs', 'equipment']));
+
+        return view('equipment.edit', compact('categories','equipment'));
     }
 
     /**
@@ -100,8 +97,11 @@ class EquipmentController extends Controller
      */
     public function update(EquipmentRequest $request, Equipment $equipment)
     {
+        $this->authorize('manage', Equipment::class);
+
         $equipment->update($request->validated());
-        return redirect('/equipment');
+
+        return redirect()->route('equipment.index')->with('success_message', 'Equipment updated successfully.');
     }
 
     /**
@@ -112,8 +112,11 @@ class EquipmentController extends Controller
      */
     public function destroy(Equipment $equipment)
     {
+        $this->authorize('manage', Equipment::class);
+
         $equipment->delete();
-        return redirect('/equipment');
+
+        return redirect()->route('equipment.index')->with('success_message', 'Equipment deleted successfuly.');
     }
 
     /**
@@ -123,6 +126,6 @@ class EquipmentController extends Controller
      */
     public function serial_numbers(Equipment $equipment)
     {
-        return $equipment->serial_numbers()->available()->get();
+        return $equipment->serialNumbers()->available()->get();
     }
 }

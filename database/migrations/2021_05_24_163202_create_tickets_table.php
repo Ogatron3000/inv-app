@@ -15,15 +15,11 @@ class CreateTicketsTable extends Migration
     {
         Schema::create('tickets', function (Blueprint $table) {
             $table->id();
-            $table->integer('ticket_type');
-            $table->integer('ticket_request_type');
-            $table->text('subject')->nullable();
-            $table->text('description')->nullable();
-            $table->double('quantity')->nullable();
-            $table->foreignId('equipment_category_id')->constrained('equipment_categories');
-            $table->foreignId('status_id')->constrained('ticket_statuses');
-            $table->foreignId('user_id')->constrained('users'); // ko je uputio
-            $table->foreignId('officer_id')->constrained('users'); // ko je preuzeo
+            $table->morphs('ticketable');
+            $table->foreignId('ticket_status_id')->default(1)->constrained();
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignId('officer_id')->nullable()->constrained('users')->nullOnDelete()->cascadeOnUpdate();
+            $table->timestamp('approval_date')->nullable();
             $table->timestamps();
         });
     }

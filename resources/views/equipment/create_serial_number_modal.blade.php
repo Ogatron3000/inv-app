@@ -1,6 +1,6 @@
 <div class="modal fade in" id="create_serial_number_modal">
     <div class="modal-dialog">
-        <form method="POST" action="" id="create_serial_number_form">
+        <form method="POST" action="{{ route('serial_numbers.store', $equipment) }}" id="create_serial_number_form">
             @csrf
             <div class="modal-content">
                 <div class="modal-header">

@@ -9,62 +9,25 @@
     <!-- Sidebar -->
     <div class="sidebar">
         <!-- Sidebar user panel (optional) -->
-        <div class="user-panel mt-3 pb-3 mb-3 d-flex">
-            <div class="image">
-                <img src="{{ asset('/img/user2-160x160.jpg') }}" class="img-circle elevation-2" alt="User Image">
-            </div>
-            <div class="info">
-                <a href="#" class="d-block">Alexander Pierce</a>
-            </div>
-        </div>
-
-        <!-- SidebarSearch Form -->
-{{--        <div class="form-inline">--}}
-{{--            <div class="input-group" data-widget="sidebar-search">--}}
-{{--                <input class="form-control form-control-sidebar" type="search" placeholder="Search" aria-label="Search">--}}
-{{--                <div class="input-group-append">--}}
-{{--                    <button class="btn btn-sidebar">--}}
-{{--                        <i class="fas fa-search fa-fw"></i>--}}
-{{--                    </button>--}}
-{{--                </div>--}}
-{{--            </div>--}}
-{{--        </div>--}}
+        {{--<div class="user-panel mt-3 pb-3 mb-3 d-flex">--}}
+        {{--    <div class="info">--}}
+        {{--        <a href="#" class="d-block">Welcome, {{ auth()->user()->name }}.</a>--}}
+        {{--    </div>--}}
+        {{--</div>--}}
 
         <!-- Sidebar Menu -->
         <nav class="mt-2">
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-                <!-- Add icons to the links using the .nav-icon class
-                     with font-awesome or any other icon font library -->
-                <li class="nav-header">Opcije menija</li>
-{{--                <li class="nav-item menu-open">--}}
-{{--                    <a href="#" class="nav-link active">--}}
-{{--                        <i class="nav-icon fas fa-tachometer-alt"></i>--}}
-{{--                        <p>--}}
-{{--                            Dashboard--}}
-{{--                            <i class="right fas fa-angle-left"></i>--}}
-{{--                        </p>--}}
-{{--                    </a>--}}
-{{--                    <ul class="nav nav-treeview">--}}
-{{--                        <li class="nav-item">--}}
-{{--                            <a href="./index.html" class="nav-link active">--}}
-{{--                                <i class="far fa-circle nav-icon"></i>--}}
-{{--                                <p>Dashboard v1</p>--}}
-{{--                            </a>--}}
-{{--                        </li>--}}
-{{--                        <li class="nav-item">--}}
-{{--                            <a href="./index2.html" class="nav-link">--}}
-{{--                                <i class="far fa-circle nav-icon"></i>--}}
-{{--                                <p>Dashboard v2</p>--}}
-{{--                            </a>--}}
-{{--                        </li>--}}
-{{--                        <li class="nav-item">--}}
-{{--                            <a href="./index3.html" class="nav-link">--}}
-{{--                                <i class="far fa-circle nav-icon"></i>--}}
-{{--                                <p>Dashboard v3</p>--}}
-{{--                            </a>--}}
-{{--                        </li>--}}
-{{--                    </ul>--}}
-{{--                </li>--}}
+                <li class="nav-item">
+                    <a href="/" class="nav-link {{ request()->is('/') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-home"></i>
+                        <p>
+                            Home
+                        </p>
+                    </a>
+                </li>
+
+                @can('viewAny', \App\Models\User::class)
                 <li class="nav-item">
                     <a href="/users" class="nav-link {{ request()->is('users*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-users"></i>
@@ -73,24 +36,83 @@
                         </p>
                     </a>
                 </li>
+                @endcan
 
+                @can('manage', \App\Models\Equipment::class)
                 <li class="nav-item">
-                    <a href="/equipment" class="nav-link {{ request()->is('equipment*') ? 'active' : '' }}">
+                    <a href="/equipment" class="nav-link {{ request()->is('equipment', 'equipment/*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-laptop-code"></i>
                         <p>
                             Equipment
                         </p>
                     </a>
                 </li>
+                @endcan
 
                 <li class="nav-item">
-                    <a href="/documents" class="nav-link {{ request()->is('documents*') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-paperclip"></i>
+                    <a href="/tickets" class="nav-link {{ request()->is('tickets*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-ticket-alt"></i>
                         <p>
-                            Documents
+                            Tickets
                         </p>
                     </a>
                 </li>
+
+                @can('viewAny', \App\Models\PurchaseOrder::class)
+                <li class="nav-item">
+                    <a href="/purchase-orders" class="nav-link {{ request()->is('purchase-orders*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-money-check"></i>
+                        <p>
+                            Purchase Orders
+                        </p>
+                    </a>
+                </li>
+                @endcan
+
+                @can('manage', \App\Models\EquipmentCategory::class)
+                <li class="nav-item">
+                    <a href="{{ route('equipment-categories.index') }}" class="nav-link {{ request()->is('equipment-categories*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-layer-group"></i>
+                        <p>
+                            Equipment Categories
+                        </p>
+                    </a>
+                </li>
+                @endcan
+
+                @can('manage', \App\Models\Department::class)
+                    <li class="nav-item">
+                        <a href="{{ route('departments.index') }}" class="nav-link {{ request()->is('departments*') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-briefcase"></i>
+                            <p>
+                                Departments
+                            </p>
+                        </a>
+                    </li>
+                @endcan
+
+                @can('manage', \App\Models\Position::class)
+                    <li class="nav-item">
+                        <a href="{{ route('positions.index') }}" class="nav-link {{ request()->is('positions*') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-id-card"></i>
+                            <p>
+                                Positions
+                            </p>
+                        </a>
+                    </li>
+                @endcan
+
+                @can('manage', \App\Models\Role::class)
+                    <li class="nav-item">
+                        <a href="{{ route('roles.index') }}" class="nav-link {{ request()->is('roles*') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-user-cog"></i>
+                            <p>
+                                Roles
+                            </p>
+                        </a>
+                    </li>
+                @endcan
+
             </ul>
         </nav>
         <!-- /.sidebar-menu -->

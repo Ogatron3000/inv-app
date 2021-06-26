@@ -2,11 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\EquipmentExport;
+use App\Exports\UserEquipmentFileByDepartmentExport;
+use App\Exports\UserEquipmentFileByPositionExport;
+use App\Exports\UserEquipmentFileBySelectedExport;
+use App\Exports\UserEquipmentFileExport;
 use App\Http\Requests\UserRequest;
 use App\Models\Department;
+use App\Models\Equipment;
 use App\Models\Position;
+use App\Models\Role;
 use App\Models\User;
+use App\Models\UserEquipment;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class UserController extends Controller
 {
@@ -15,15 +24,23 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::all();
-        $content_header = "Employees list";
-        $breadcrumbs = [
-            [ 'name' => 'Home', 'link' => '/' ],
-            [ 'name' => 'Employees list', 'link' => '/users' ],
-        ];
-        return view('users.index', compact(['users', 'content_header', 'breadcrumbs']));
+        $this->authorize('viewAny', User::class);
+
+        // search
+        if ($request->has('q')) {
+            $search = $request->q;
+            $users = User::where('name', 'LIKE', "%$search%")
+                ->paginate(User::PAGINATE);
+        } else {
+            $users = User::query()->paginate(User::PAGINATE);
+        }
+
+        $departments = Department::all();
+        $positions = Position::all();
+
+        return view('users.index', compact('users', 'departments', 'positions'));
     }
 
     /**
@@ -33,26 +50,28 @@ class UserController extends Controller
      */
     public function create()
     {
+        $this->authorize('manage', User::class);
+
         $departments = Department::all();
-        $content_header = "Add New Employee";
-        $breadcrumbs = [
-            [ 'name' => 'Home', 'link' => '/' ],
-            [ 'name' => 'Employees list', 'link' => '/users' ],
-            [ 'name' => 'New Employee', 'link' => '/users/create' ],
-        ];
-        return view('users.create', compact(['departments', 'content_header', 'breadcrumbs']));
+        $roles = Role::all();
+
+        return view('users.create', compact('departments', 'roles'));
     }
 
     /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     *
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function store(UserRequest $request)
     {
+        $this->authorize('manage', User::class);
+
         User::query()->create($request->validated());
-        return redirect(route('users.index'));
+
+        return redirect()->route('users.index')->with('success_message', 'User added successfully.');
     }
 
     /**
@@ -63,59 +82,82 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
-        $content_header = "Employee details";
-        $breadcrumbs = [
-            [ 'name' => 'Home', 'link' => '/' ],
-            [ 'name' => 'Employees list', 'link' => '/users' ],
-            [ 'name' => 'Employee details', 'link' => '/users/'.$user->id ],
-        ];
-        $items = $user->items;
-        return view('users.show', compact(['content_header', 'breadcrumbs', 'user', 'items']));
+        $this->authorize('view', $user);
+
+        $equipment = Equipment::query()->inStock()->get();
+        $userEquipment = $user->items()->paginate(UserEquipment::PAGINATE);
+
+        return view('users.show', compact('user', 'equipment', 'userEquipment'));
     }
 
     /**
      * Show the form for editing the specified resource.
      *
      * @param  \App\Models\User  $user
-     * @return \Illuminate\Http\Response
+     *
+     * @return \Illuminate\Contracts\View\View
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function edit(User $user)
     {
+        $this->authorize('manage', User::class);
+
         $departments = Department::all();
-        $content_header = "Edit Employee details";
-        $user->append('department_id');
-        $breadcrumbs = [
-            [ 'name' => 'Home', 'link' => '/' ],
-            [ 'name' => 'Employees list', 'link' => '/users' ],
-            [ 'name' => 'Edit Employee details', 'link' => '/users/'.$user->id.'/edit' ],
-        ];
-        return view('users.edit', compact(['departments', 'content_header', 'breadcrumbs', 'user']));
+        $roles = Role::all();
+
+        return view('users.edit', compact('user', 'departments', 'roles'));
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\User  $user
-     * @return \Illuminate\Http\Response
+     * @param  \App\Http\Requests\UserRequest  $request
+     * @param  \App\Models\User                $user
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function update(UserRequest $request, User $user)
     {
-        $user->update($request->except(['password']));
-        return redirect('/users');
+        $this->authorize('manage', User::class);
+
+        $user->update($request->validated());
+
+        return redirect()->route('users.index')->with('success_message', 'User updated successfully.');
     }
 
     /**
      * Remove the specified resource from storage.
      *
      * @param  \App\Models\User  $user
-     * @return \Illuminate\Http\Response
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function destroy(User $user)
     {
-        if($user->id != auth()->id()){
+        $this->authorize('manage', User::class);
+
+        if ($user->id != auth()->id()){
             $user->delete();
+
+            return redirect()->route('users.index')->with('success_message', 'User deleted successfully.');
         }
-        return redirect('/users');
+
+        return redirect()->route('users.index');
+    }
+
+    public function autocomplete(Request $request)
+    {
+        $users = [];
+
+        if ($request->has('q')) {
+            $search = $request->q;
+            $users = User::select("id", "name")
+                ->where('name', 'LIKE', "%$search%")
+                ->get();
+        }
+
+        return response()->json($users);
     }
 }

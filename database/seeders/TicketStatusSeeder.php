@@ -14,7 +14,7 @@ class TicketStatusSeeder extends Seeder
      */
     public static function run()
     {
-        $statuses = ['1' => 'Unprocessed', '2' => 'In progress', '3' => 'Processed'];
+        $statuses = [1 => 'Pending', 2 => 'In progress', 3 => 'Processed'];
         foreach ($statuses as $key => $status) {
             TicketStatus::query()->create([
                 'id' => $key,

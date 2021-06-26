@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\Comment;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -17,6 +18,45 @@ class EventServiceProvider extends ServiceProvider
     protected $listen = [
         Registered::class => [
             SendEmailVerificationNotification::class,
+        ],
+        TicketCreated::class => [
+            TicketCreatedListener::class
+        ],
+        TicketUpdated::class => [
+            TicketUpdatedListener::class
+        ],
+        TicketManaged::class => [
+            TicketManagedListener::class
+        ],
+        TicketReleased::class => [
+            TicketReleasedListener::class
+        ],
+        TicketApproved::class => [
+            TicketApprovedListener::class
+        ],
+        TicketRejected::class => [
+            TicketRejectedListener::class
+        ],
+        TicketClosed::class => [
+            TicketClosedListener::class
+        ],
+        CommentAdded::class => [
+            CommentAddedListener::class
+        ],
+        PurchaseOrderCreated::class => [
+            PurchaseOrderCreatedListener::class
+        ],
+        PurchaseOrderUpdated::class => [
+            PurchaseOrderUpdatedListener::class
+        ],
+        PurchaseOrderApproved::class => [
+            PurchaseOrderApprovedListener::class
+        ],
+        PurchaseOrderRejected::class => [
+            PurchaseOrderRejectedListener::class
+        ],
+        PurchaseOrderClosed::class => [
+            PurchaseOrderClosedListener::class
         ],
     ];
 

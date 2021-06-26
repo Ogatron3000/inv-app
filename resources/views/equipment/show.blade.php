@@ -2,6 +2,17 @@
 
 @section('page_title', 'Equipment details')
 
+@section('content-header')
+    @include('partials.content-header', [
+        'content_header' => "Equipment details",
+        'breadcrumbs' => [
+            [ 'name' => 'Home', 'link' => '/' ],
+            [ 'name' => 'Equipment List', 'link' => '/equipment' ],
+            [ 'name' => 'Equipment Details', 'link' => '/equipment/' . $equipment->id ],
+        ]
+    ])
+@endsection
+
 @section('content')
 
     <div class="row">
@@ -15,9 +26,16 @@
                             Equipment details
                         </h3>
 
-                        <button class="btn btn-primary btn-sm btn-flat" data-toggle="modal" data-target="#create_serial_number_modal">
-                            Add Serial Number
-                        </button>
+                        <div class="card-tools">
+                            <ul class="nav nav-pills">
+                                <li class="nav-item">
+                                    <button class="btn btn-primary btn-sm btn-flat" data-toggle="modal" data-target="#create_serial_number_modal">
+                                        Add Serial Number
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+
                     </div>
 
                 </div><!-- /.card-header -->
@@ -60,7 +78,7 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                @foreach($serial_numbers as $key => $sn)
+                                @foreach($equipment->serialNumbers as $key => $sn)
                                     <tr style="@if($sn->is_used) text-decoration: line-through; @endif" >
                                         <td class="align-middle">{{ $key + 1 }}</td>
                                         <td class="align-middle">{{ $sn->serial_number }}</td>
@@ -69,15 +87,19 @@
                                                 <i class="fas fa-pen"></i>
                                             </button>
                                             @if( ! $sn->is_used)
-                                                <button class="btn btn-link text-dark d-block" data-toggle="modal" data-target="#delete_serial_number_modal" data-id="{{ $sn->id }}">
+                                                <a id="delete_modal_button" class="btn btn-link text-dark d-block" data-toggle="modal" data-target="#delete_modal" data-id="{{ $sn->id }}">
                                                     <i class="fas fa-times"></i>
-                                                </button>
+                                                </a>
+                                                <form action="{{ route('serial_numbers.destroy', [$equipment, $sn]) }}" method="POST" id="delete_form_{{ $sn->id }}">
+                                                    @method('DELETE')
+                                                    @csrf
+                                                </form>
                                             @endif
                                         </td>
                                     </tr>
                                 @endforeach
                                 <tr>
-                                    <td class="w-25 align-middle">{{ count($serial_numbers) + 1 }}</td>
+                                    <td class="w-25 align-middle">{{ count($equipment->serialNumbers) + 1 }}</td>
                                     <form action="{{ route('serial_numbers.store', $equipment->id) }}" method="POST">
                                         @csrf
                                         <td>
@@ -108,10 +130,12 @@
 
     @include('equipment.create_serial_number_modal')
     @include('equipment.edit_serial_number_modal')
-    @include('equipment.delete_serial_number_modal')
+    @include('partials.delete_modal', ['modalTitle' => 'Delete Serial Number'])
 
 @endsection
+
 @section('additional_scripts')
+    <script src="{{ asset('js/helpers/deleteModal.js') }}"></script>
     <script>
         const serialNumber = $('#serial_number');
         const serialNumberButton = $('#serial_number_button');
@@ -124,13 +148,6 @@
             }
         }
 
-        $('#create_serial_number_modal').on('show.bs.modal', function(e) {
-            let modal = $(this),
-                equipmentId = {{ $equipment->id }};
-
-            modal.find("#create_serial_number_form").attr("action", `/equipment/${equipmentId}/serial-numbers`);
-        });
-
         $('#edit_serial_number_modal').on('show.bs.modal', function(e) {
             let button = $(e.relatedTarget),
                 modal = $(this),
@@ -140,15 +157,6 @@
 
             modal.find("#edit_serial_number_form").attr("action", `/equipment/${equipmentId}/serial-numbers/${serialNumberId}`);
             modal.find("#edit_serial_number_input").val(serialNumber);
-        });
-
-        $('#delete_serial_number_modal').on('show.bs.modal', function(e) {
-            let button = $(e.relatedTarget),
-                modal = $(this),
-                serialNumberId = button.data('id'),
-                equipmentId = {{ $equipment->id }};
-
-            modal.find("#delete_serial_number_form").attr("action", `/equipment/${equipmentId}/serial-numbers/${serialNumberId}`);
         });
     </script>
 @endsection

@@ -38,12 +38,14 @@ class SerialNumberController extends Controller
      */
     public function store(SerialNumberRequest $request, Equipment $equipment)
     {
+        $this->authorize('manage', SerialNumber::class);
+
         $attributes = $request->validated();
         $attributes['equipment_id'] = $equipment->id;
 
         SerialNumber::create($attributes);
 
-        return redirect()->route('equipment.show', $equipment->id);
+        return redirect()->route('equipment.show', $equipment->id)->with('success_message', 'Serial number added successfully.');
     }
 
     /**
@@ -79,11 +81,13 @@ class SerialNumberController extends Controller
      */
     public function update(SerialNumberRequest $request, Equipment $equipment, SerialNumber $serialNumber)
     {
+        $this->authorize('manage', SerialNumber::class);
+
         $attributes = $request->validated();
 
         $serialNumber->update($attributes);
 
-        return redirect()->route('equipment.show', $equipment->id);
+        return redirect()->route('equipment.show', $equipment->id)->with('success_message', 'Serial number updated successfully.');
     }
 
     /**
@@ -96,10 +100,12 @@ class SerialNumberController extends Controller
      */
     public function destroy(Equipment $equipment, SerialNumber $serialNumber)
     {
+        $this->authorize('manage', SerialNumber::class);
+
         if ( ! $serialNumber->is_used) {
             $serialNumber->delete();
         }
 
-        return redirect()->route('equipment.show', $equipment->id);
+        return redirect()->route('equipment.show', $equipment->id)->with('success_message', 'Serial number deleted successfully.');
     }
 }

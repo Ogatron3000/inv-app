@@ -22,5 +22,13 @@ class UserSeeder extends Seeder
             'position_id' => 1,
             'role_id' => 1,
         ]);
+
+        User::query()->create([
+            'name' => 'Josh Posh',
+            'email' => 'bla@bla.com',
+            'password' => Hash::make('12345678'),
+            'position_id' => 1,
+            'role_id' => 3,
+        ]);
     }
 }

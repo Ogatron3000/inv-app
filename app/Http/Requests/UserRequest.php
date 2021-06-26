@@ -36,7 +36,8 @@ class UserRequest extends FormRequest
             'email' => 'required|email',
             'password' => 'required|min:8|max:255',
             'position_id' => 'required|integer',
-            'department_id' => 'nullable',
+            'department_id' => 'required',
+            'role_id' => 'required',
         ];
     }
 
@@ -44,16 +45,16 @@ class UserRequest extends FormRequest
         return [
             'name' => 'required|min:3|max:255',
             'email' => 'required|email',
-            'password' => 'nullable',
             'position_id' => 'required|integer',
-            'department_id' => 'nullable',
+            'department_id' => 'required',
+            'role_id' => 'required',
         ];
     }
 
     public function validated()
     {
         $validated = $this->validate($this->rules());
-        if($validated['password'])
+        if(isset($validated['password']) && $validated['password'])
             $validated['password'] = Hash::make($validated['password']);
         return $validated;
     }

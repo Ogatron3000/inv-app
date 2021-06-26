@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\RoleRequest;
 use App\Models\Role;
 use Illuminate\Http\Request;
 
@@ -12,9 +13,20 @@ class RoleController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $this->authorize('manage', Role::class);
+
+        // search
+        if ($request->has('q')) {
+            $search = $request->q;
+            $roles = Role::where('name', 'LIKE', "%$search%")
+                ->get();
+        } else {
+            $roles = Role::all();
+        }
+
+        return view('roles.index', compact('roles'));
     }
 
     /**
@@ -30,12 +42,17 @@ class RoleController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Http\Requests\RoleRequest  $request
+     *
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(RoleRequest $request)
     {
-        //
+        $this->authorize('manage', Role::class);
+
+        Role::create($request->validated());
+
+        return redirect()->back()->with('success_message', 'Role created successfully.');
     }
 
     /**
@@ -63,13 +80,18 @@ class RoleController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Role  $role
+     * @param  \App\Http\Requests\RoleRequest  $request
+     * @param  \App\Models\Role                $role
+     *
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Role $role)
+    public function update(RoleRequest $request, Role $role)
     {
-        //
+        $this->authorize('manage', Role::class);
+
+        $role->update($request->validated());
+
+        return redirect()->back()->with('success_message', 'Role updated successfully.');
     }
 
     /**
@@ -80,6 +102,10 @@ class RoleController extends Controller
      */
     public function destroy(Role $role)
     {
-        //
+        $this->authorize('manage', Role::class);
+
+        $role->delete();
+
+        return redirect()->back()->with('success_message', 'Role deleted successfully.');
     }
 }

@@ -7,28 +7,59 @@ use Illuminate\Database\Eloquent\Model;
 
 class Equipment extends Model
 {
+
     use HasFactory;
 
     protected $guarded = [];
 
-    public function category(){
+    protected $with = ['category', 'serialNumbers', 'availableSerialNumbers'];
+
+    public const PAGINATE = 10;
+
+    public function category()
+    {
         return $this->belongsTo(EquipmentCategory::class, 'equipment_category_id');
     }
 
-    public function serial_numbers(){
+    public function userEquipment()
+    {
+        return $this->hasMany(UserEquipment::class);
+    }
+
+    public function serialNumbers()
+    {
         return $this->hasMany(SerialNumber::class);
     }
 
-    public function getShortDescriptionAttribute(){
-        if(strlen($this->description) < 25) return $this->description;
-        else return substr($this->description, 0, 25).'...';
+    public function availableSerialNumbers()
+    {
+        return $this->hasMany(SerialNumber::class)->available();
     }
 
-    public function getFullNameAttribute(){
-        return $this->category->name." - ".$this->name;
+    public function getAvailableQuantityAttribute()
+    {
+        return $this->availableSerialNumbers->count();
     }
 
-    public function scopeAvailable($query){
-        return $query->where('available_quantity', '>', 0);
+    public function getShortDescriptionAttribute()
+    {
+        if (strlen($this->description) < 25) {
+            return $this->description;
+        } else {
+            return substr($this->description, 0, 25) . '...';
+        }
     }
+
+    public function getFullNameAttribute()
+    {
+        return $this->category->name . " - " . $this->name;
+    }
+
+    public function scopeInStock($query)
+    {
+        return $query->whereHas('serialNumbers', function ($serialNumQuery) {
+            $serialNumQuery->available();
+        });
+    }
+
 }

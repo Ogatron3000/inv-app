@@ -16,7 +16,7 @@ class CreateSerialNumbersTable extends Migration
         Schema::create('serial_numbers', function (Blueprint $table) {
             $table->id();
             $table->string('serial_number');
-            $table->foreignId('equipment_id')->constrained('equipment');
+            $table->foreignId('equipment_id')->constrained('equipment')->cascadeOnDelete()->cascadeOnUpdate();
             $table->timestamps();
         });
     }
