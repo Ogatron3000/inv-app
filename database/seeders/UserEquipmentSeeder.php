@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\SerialNumber;
 use App\Models\UserEquipment;
+use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 
 class UserEquipmentSeeder extends Seeder
@@ -21,6 +22,7 @@ class UserEquipmentSeeder extends Seeder
                 'admin_id' => 1,
                 'equipment_id' => $i,
                 'serial_number_id' => SerialNumber::query()->where('equipment_id', $i)->first()->serial_number,
+                'date' => Carbon::now()
             ]);
         }
     }
