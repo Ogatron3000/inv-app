@@ -66,6 +66,19 @@
                         </div>
                     </form>
                 </div>
+                <div class="card-footer">
+                    <div class="d-flex flex-column">
+                        Emails:
+                        <ul>
+                            <li>superadmin@mail.com</li>
+                            <li>admin@mail.com</li>
+                            <li>support@mail.com</li>
+                            <li>hr@mail.com</li>
+                            <li>user@mail.com</li>
+                        </ul>
+                        <span>Password: 12345678</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

@@ -89,7 +89,7 @@ class UserEquipmentController extends Controller
      */
     public function update(Request $request, UserEquipment $userEquipment)
     {
-        $this->authorize('manage', User::class);
+        $this->authorize('manage', UserEquipment::class);
 
         $userEquipment->update([ 'return_date' => date('Y-m-d H:i:s') ]);
         // $userEquipment->equipment()->update(['available_quantity' => $userEquipment->equipment->available_quantity + 1]);

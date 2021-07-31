@@ -33,7 +33,7 @@ class UserRequest extends FormRequest
     public function storeRules(){
         return [
             'name' => 'required|min:3|max:255',
-            'email' => 'required|email',
+            'email' => 'required|email|unique:users,email',
             'password' => 'required|min:8|max:255',
             'position_id' => 'required|integer',
             'department_id' => 'required',
@@ -44,7 +44,7 @@ class UserRequest extends FormRequest
     public function updateRules(){
         return [
             'name' => 'required|min:3|max:255',
-            'email' => 'required|email',
+            'email' => 'required|email|unique:users,email',
             'position_id' => 'required|integer',
             'department_id' => 'required',
             'role_id' => 'required',
