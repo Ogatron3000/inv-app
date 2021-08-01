@@ -1,11 +1,23 @@
 <h1>Inventory App</h1>
 
-Final project of Amplitudo's Web Academy.
+Inventory management application utilizing ticket system for requests, repairs and ordering equipment.
 
-Users can submit tickets to Support or Administration, who can manage them - approve, reject or submit a purchase order to HR. HR can approve/reject purchase orders.
+Live preview: https://amp-inventory-app.herokuapp.com/
 
-Equipment stats and equipment assigned to specific users can be exported in Excel.
+Features:
+- ticket system for requests and repairs
+- purchase orders for ordering new equipment
+- comments and activity history for tickets and purchase orders
+- user equipment files
+- user notifications
+- equipment FAQ
+- multiple roles
+- excel reports with group and custom selection
+- CRUD for every model
 
-There's also basic CRUD for each model which can be managed by Super Admin.
-
-Built with Laravel.
+Built with:
+- Laravel
+- Bootstrap
+- MySQL
+- Laravel Excel
+- SweetAlert
