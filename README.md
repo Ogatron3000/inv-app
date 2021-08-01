@@ -10,6 +10,7 @@ Features:
 - comments and activity history for tickets and purchase orders
 - user equipment files
 - user notifications
+- adding new equipment and assigning equipment to users
 - equipment FAQ
 - multiple roles
 - excel reports with group and custom selection
